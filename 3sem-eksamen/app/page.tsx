@@ -3,6 +3,7 @@ import Navbar from "@/components/Navbar";
 import Welcome from "@/components/Welcome";
 import Featured from "@/components/Featured";
 import Gallery from "@/components/Gallery";
+import Track from "@/components/Track";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <Welcome />
       <Featured />
       <Gallery />
+      <Track />
     </main>
   );
 }
