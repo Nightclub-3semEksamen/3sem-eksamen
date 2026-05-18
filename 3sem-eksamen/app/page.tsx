@@ -5,6 +5,7 @@ import Featured from "@/components/Featured";
 import Gallery from "@/components/Gallery";
 import Track from "@/components/Track";
 import Video from "@/components/Video";
+import Testimonials from "@/components/Testimonials";
 
 export default function Home() {
   return (
@@ -16,6 +17,7 @@ export default function Home() {
       <Gallery />
       <Track />
       <Video />
+      <Testimonials />
     </main>
   );
 }
