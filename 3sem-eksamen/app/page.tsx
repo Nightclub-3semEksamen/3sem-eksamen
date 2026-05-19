@@ -6,6 +6,7 @@ import Gallery from "@/components/Gallery";
 import Track from "@/components/Track";
 import Video from "@/components/Video";
 import Testimonials from "@/components/Testimonials";
+import Newsletter from "@/components/Newsletter";
 
 export default function Home() {
   return (
@@ -18,6 +19,7 @@ export default function Home() {
       <Track />
       <Video />
       <Testimonials />
+      <Newsletter />
     </main>
   );
 }
