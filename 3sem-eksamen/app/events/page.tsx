@@ -1,7 +1,7 @@
 import { getEvents, getImageUrl } from "@/lib/api";
 import Image from "next/image";
 import Link from "next/link";
-
+import Navbar from "@/components/Navbar";
 const EVENTS_PER_PAGE = 3;
 
 type Props = {
@@ -22,6 +22,7 @@ export default async function EventsPage({ searchParams }: Props) {
 
   return (
     <main className="bg-black text-white">
+      <Navbar />
       <section className="py-20 text-center bg-neutral-950">
         <h1 className="text-3xl font-bold uppercase">Events</h1>
       </section>

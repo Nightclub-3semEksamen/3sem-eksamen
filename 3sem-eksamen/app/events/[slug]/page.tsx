@@ -1,6 +1,7 @@
 import { getEvents, getImageUrl } from "@/lib/api";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import Navbar from "@/components/Navbar";
 
 type Props = {
   params: Promise<{
@@ -20,6 +21,7 @@ export default async function EventDetailPage({ params }: Props) {
 
   return (
     <main className="bg-black text-white min-h-screen">
+      <Navbar />
       {event.heroAsset?.url && <Image src={getImageUrl(event.heroAsset.url)} alt={event.title} width={1400} height={700} className="w-full h-[500px] object-cover" />}
 
       <section className="max-w-4xl mx-auto px-6 py-16">

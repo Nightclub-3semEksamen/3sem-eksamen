@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
+import Navbar from "@/components/Navbar";
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function ContactPage() {
@@ -83,6 +83,7 @@ export default function ContactPage() {
 
   return (
     <main className="bg-black min-h-screen text-white overflow-hidden">
+      <Navbar />
       {/* HERO */}
       <section
         className="relative h-[160px] md:h-[240px] bg-cover bg-center flex items-center justify-center"
