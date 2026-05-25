@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   FaBackward,
   FaForward,
@@ -13,33 +13,38 @@ import {
 const tracks = [
   {
     id: 1,
-    title: "Club Mood",
+    title: "Black Box Funky",
     image: "/images/track-1.webp",
+    audio: "/audio/black-box-funky.mp3",
     duration: 214,
   },
   {
     id: 2,
-    title: "Night Guitar",
+    title: "Euphoria",
     image: "/images/track-2.webp",
+    audio: "/audio/euphoria.mp3",
     duration: 238,
   },
   {
     id: 3,
-    title: "Main Stage",
+    title: "Fashion Red Tape",
     image: "/images/track-main.webp",
+    audio: "/audio/fashion-red-tape.mp3",
     duration: 218,
   },
   {
     id: 4,
-    title: "Live Stage",
+    title: "Black Box Funky",
     image: "/images/track-3.webp",
-    duration: 196,
+    audio: "/audio/black-box-funky.mp3",
+    duration: 214,
   },
   {
     id: 5,
-    title: "Late Night",
+    title: "Euphoria",
     image: "/images/track-4.webp",
-    duration: 251,
+    audio: "/audio/euphoria.mp3",
+    duration: 238,
   },
 ];
 
@@ -47,8 +52,9 @@ const sliderClass =
   "h-[3px] w-full cursor-pointer appearance-none bg-[oklch(0.65_0.25_8)] accent-[oklch(0.65_0.25_8)] [&::-webkit-slider-thumb]:h-[18px] [&::-webkit-slider-thumb]:w-[18px] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:h-[18px] [&::-moz-range-thumb]:w-[18px] [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:cursor-pointer";
 
 function formatTime(seconds: number) {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
+  const safeSeconds = Number.isFinite(seconds) ? Math.floor(seconds) : 0;
+  const minutes = Math.floor(safeSeconds / 60);
+  const remainingSeconds = safeSeconds % 60;
 
   return `${String(minutes).padStart(2, "0")}:${String(
     remainingSeconds,
@@ -74,19 +80,24 @@ function NextTrackIcon() {
 }
 
 export default function Track() {
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
   const [volume, setVolume] = useState(78);
   const [activeTrackId, setActiveTrackId] = useState(3);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentSeconds, setCurrentSeconds] = useState(0);
+  const [realDuration, setRealDuration] = useState<number | null>(null);
 
   const activeTrack =
     tracks.find((track) => track.id === activeTrackId) || tracks[2];
 
-  const progress = Math.round((currentSeconds / activeTrack.duration) * 100);
+  const duration = realDuration || activeTrack.duration;
+  const progress = duration > 0 ? Math.round((currentSeconds / duration) * 100) : 0;
 
   function selectTrack(trackId: number) {
     setActiveTrackId(trackId);
     setCurrentSeconds(0);
+    setRealDuration(null);
     setIsPlaying(false);
   }
 
@@ -106,34 +117,93 @@ export default function Track() {
   }
 
   function handleProgressChange(value: number) {
-    const nextSeconds = Math.round((value / 100) * activeTrack.duration);
+    const audio = audioRef.current;
+    const nextSeconds = Math.round((value / 100) * duration);
+
     setCurrentSeconds(nextSeconds);
+
+    if (audio) {
+      audio.currentTime = nextSeconds;
+    }
+  }
+
+  async function togglePlay() {
+    const audio = audioRef.current;
+
+    if (!audio) return;
+
+    if (audio.paused) {
+      try {
+        await audio.play();
+        setIsPlaying(true);
+      } catch {
+        setIsPlaying(false);
+      }
+    } else {
+      audio.pause();
+      setIsPlaying(false);
+    }
   }
 
   useEffect(() => {
-    if (!isPlaying) return;
+    const audio = audioRef.current;
 
-    const interval = window.setInterval(() => {
-      setCurrentSeconds((seconds) => {
-        if (seconds >= activeTrack.duration) {
-          return activeTrack.duration;
-        }
+    if (!audio) return;
 
-        return seconds + 1;
-      });
-    }, 1000);
-
-    return () => window.clearInterval(interval);
-  }, [isPlaying, activeTrack.duration]);
+    audio.volume = volume / 100;
+  }, [volume]);
 
   useEffect(() => {
-    if (currentSeconds >= activeTrack.duration) {
-      setIsPlaying(false);
+    const audio = audioRef.current;
+
+    if (!audio) return;
+
+    audio.pause();
+    audio.currentTime = 0;
+    audio.load();
+
+    setCurrentSeconds(0);
+    setRealDuration(null);
+    setIsPlaying(false);
+  }, [activeTrack.audio]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+
+    if (!audio) return;
+
+    function handleLoadedMetadata() {
+      if (audio && Number.isFinite(audio.duration)) {
+        setRealDuration(audio.duration);
+      }
     }
-  }, [currentSeconds, activeTrack.duration]);
+
+    function handleTimeUpdate() {
+      if (audio) {
+        setCurrentSeconds(audio.currentTime);
+      }
+    }
+
+    function handleEnded() {
+      setIsPlaying(false);
+      setCurrentSeconds(0);
+    }
+
+    audio.addEventListener("loadedmetadata", handleLoadedMetadata);
+    audio.addEventListener("timeupdate", handleTimeUpdate);
+    audio.addEventListener("ended", handleEnded);
+
+    return () => {
+      audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
+      audio.removeEventListener("timeupdate", handleTimeUpdate);
+      audio.removeEventListener("ended", handleEnded);
+    };
+  }, [activeTrack.audio]);
 
   return (
     <section className="bg-black px-8 py-20 text-white">
+      <audio ref={audioRef} src={activeTrack.audio} preload="metadata" />
+
       <div className="mx-auto max-w-7xl">
         <h2 className="text-center text-4xl font-bold uppercase leading-tight tracking-[0.16em] md:text-2xl md:font-medium">
           Night Club Track
@@ -163,7 +233,11 @@ export default function Track() {
 
                 <div className="absolute inset-0 flex items-center justify-center md:hidden">
                   <span className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-[oklch(0.65_0.25_8)] text-3xl text-[oklch(0.65_0.25_8)]">
-                    <FaPlay className="translate-x-[3px]" />
+                    {isPlaying ? (
+                      <FaPause />
+                    ) : (
+                      <FaPlay className="translate-x-[3px]" />
+                    )}
                   </span>
                 </div>
 
@@ -198,8 +272,7 @@ export default function Track() {
 
               <div className="mt-8 grid grid-cols-1 items-center gap-8 md:grid-cols-[150px_1fr_210px] md:gap-7">
                 <p className="text-xl font-bold md:text-sm">
-                  {formatTime(currentSeconds)} /{" "}
-                  {formatTime(activeTrack.duration)}
+                  {formatTime(currentSeconds)} / {formatTime(duration)}
                 </p>
 
                 <div className="flex items-center justify-center gap-8">
@@ -215,7 +288,7 @@ export default function Track() {
                   <button
                     type="button"
                     aria-label={isPlaying ? "Pause" : "Play"}
-                    onClick={() => setIsPlaying((current) => !current)}
+                    onClick={togglePlay}
                     className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-white text-3xl transition hover:border-[oklch(0.65_0.25_8)] hover:text-[oklch(0.65_0.25_8)] md:h-12 md:w-12 md:text-xl"
                   >
                     {isPlaying ? (
