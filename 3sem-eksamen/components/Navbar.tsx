@@ -58,12 +58,10 @@ export default function Navbar() {
   return (
     <>
       <header className="w-full bg-black border-y border-pink-500 relative overflow-hidden">
-        {/* Pink corner triangles */}
         <span className="absolute left-0 top-0 w-0 h-0 border-t-[18px] border-t-pink-500 border-r-[18px] border-r-transparent z-10" />
         <span className="absolute right-0 bottom-0 w-0 h-0 border-b-[18px] border-b-pink-500 border-l-[18px] border-l-transparent z-10" />
 
         <div className="max-w-7xl mx-auto px-5 md:px-8 h-[82px] md:h-[95px] flex items-center justify-between relative">
-          {/* Logo */}
           <Link href="/" className="relative z-20">
             <h1 className="text-white font-extrabold text-2xl md:text-4xl tracking-[3px] md:tracking-[4px]">
               NIGHT<span className="text-pink-500">CLUB</span>
@@ -72,7 +70,6 @@ export default function Navbar() {
             <p className="text-white/70 text-[8px] md:text-[10px] tracking-[5px] md:tracking-[6px] mt-2 uppercase">Have a good time</p>
           </Link>
 
-          {/* Desktop navigation */}
           <nav className="relative hidden md:block">
             <div className="flex items-center gap-12 relative">
               {navItems.map((item, index) => {
@@ -114,7 +111,6 @@ export default function Navbar() {
             </div>
           </nav>
 
-          {/* Mobile burger */}
           <button popoverTarget="mobile-menu" className="md:hidden relative z-20 flex flex-col gap-[6px]" aria-label="Open menu">
             <span className="w-9 h-[3px] bg-white rounded-full" />
             <span className="w-9 h-[3px] bg-white rounded-full" />
@@ -123,10 +119,8 @@ export default function Navbar() {
         </div>
       </header>
 
-      {/* Mobile Popover Menu */}
       <div id="mobile-menu" popover="auto" className="backdrop:bg-black/70 bg-transparent p-0 border-0 w-full h-full max-w-none max-h-none">
         <div className="relative min-h-screen bg-black/80 flex items-center justify-center overflow-hidden">
-          {/* Background image / overlay */}
           <div className="absolute inset-0 bg-[url('/images/hero.jpg')] bg-cover bg-center opacity-40" />
           <div className="absolute inset-0 bg-black/60" />
 
