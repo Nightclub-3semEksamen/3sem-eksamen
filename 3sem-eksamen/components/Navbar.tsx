@@ -57,7 +57,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="w-full bg-black border-y border-pink-500 relative overflow-hidden">
+      <header className="sticky top-0 z-50 w-full bg-black border-y border-pink-500 overflow-hidden">
         <span className="absolute left-0 top-0 w-0 h-0 border-t-[18px] border-t-pink-500 border-r-[18px] border-r-transparent z-10" />
         <span className="absolute right-0 bottom-0 w-0 h-0 border-b-[18px] border-b-pink-500 border-l-[18px] border-l-transparent z-10" />
 
