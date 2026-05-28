@@ -120,7 +120,7 @@ export default function Navbar() {
       </header>
 
       <div id="mobile-menu" popover="auto" className="backdrop:bg-black/70 bg-transparent p-0 border-0 w-full h-full max-w-none max-h-none">
-        <div className="relative min-h-screen bg-black/80 flex items-center justify-center overflow-hidden">
+        <div className="relative min-h-screen bg-black/10 flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0 bg-[url('/images/hero.jpg')] bg-cover bg-center opacity-40" />
           <div className="absolute inset-0 bg-black/60" />
 
