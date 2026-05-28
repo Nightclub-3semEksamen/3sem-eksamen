@@ -44,6 +44,12 @@ export default function Navbar() {
     }
   }, [pathname]);
 
+  useEffect(() => {
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
   const moveIndicator = (index: number) => {
     const element = navRefs.current[index];
 
@@ -54,6 +60,22 @@ export default function Navbar() {
       });
     }
   };
+
+  function handlePopoverToggle() {
+    setTimeout(() => {
+      const popover = document.getElementById("mobile-menu");
+
+      if (popover?.matches(":popover-open")) {
+        document.body.style.overflow = "hidden";
+      } else {
+        document.body.style.overflow = "";
+      }
+    }, 0);
+  }
+
+  function closeMobileMenu() {
+    document.body.style.overflow = "";
+  }
 
   return (
     <>
@@ -111,7 +133,7 @@ export default function Navbar() {
             </div>
           </nav>
 
-          <button popoverTarget="mobile-menu" className="md:hidden relative z-20 flex flex-col gap-[6px]" aria-label="Open menu">
+          <button popoverTarget="mobile-menu" onClick={handlePopoverToggle} className="md:hidden relative z-20 flex flex-col gap-[6px]" aria-label="Open menu">
             <span className="w-9 h-[3px] bg-white rounded-full" />
             <span className="w-9 h-[3px] bg-white rounded-full" />
             <span className="w-9 h-[3px] bg-white rounded-full" />
@@ -124,7 +146,7 @@ export default function Navbar() {
           <div className="absolute inset-0 bg-[url('/images/hero.jpg')] bg-cover bg-center opacity-40" />
           <div className="absolute inset-0 bg-black/60" />
 
-          <button popoverTarget="mobile-menu" popoverTargetAction="hide" className="absolute top-8 right-8 z-30 text-white text-5xl font-bold" aria-label="Close menu">
+          <button popoverTarget="mobile-menu" popoverTargetAction="hide" onClick={closeMobileMenu} className="absolute top-8 right-8 z-30 text-white text-5xl font-bold" aria-label="Close menu">
             ×
           </button>
 
@@ -133,7 +155,7 @@ export default function Navbar() {
               const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
 
               return (
-                <Link key={item.name} href={item.href} popoverTarget="mobile-menu" className={`relative text-base font-bold tracking-[1px] transition-colors hover:text-pink-500 ${isActive ? "text-pink-500" : "text-white"}`}>
+                <Link key={item.name} href={item.href} popoverTarget="mobile-menu" onClick={closeMobileMenu} className={`relative text-base font-bold tracking-[1px] transition-colors hover:text-pink-500 ${isActive ? "text-pink-500" : "text-white"}`}>
                   {item.name}
 
                   {isActive && <span className="absolute left-1/2 -translate-x-1/2 -bottom-2 w-full h-[2px] bg-pink-500 rounded-full" />}
