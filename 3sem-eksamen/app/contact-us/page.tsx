@@ -1,9 +1,10 @@
 "use client";
 
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://night-club-api-2026-main.onrender.com";
 
 type GalleryItem = {
   id: number;
@@ -27,12 +28,10 @@ export default function ContactPage() {
     comment: "",
   });
 
-  const [status, setStatus] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     async function fetchGalleryImage() {
-      if (!API_URL) return;
-
       try {
         const res = await fetch(`${API_URL}/gallery`);
         const data: GalleryItem[] = await res.json();
@@ -62,13 +61,8 @@ export default function ContactPage() {
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    if (!API_URL) {
-      setStatus("API URL mangler");
-      return;
-    }
-
     try {
-      setStatus("Sending...");
+      setIsSubmitting(true);
 
       const res = await fetch(`${API_URL}/contact_messages`, {
         method: "POST",
@@ -83,15 +77,11 @@ export default function ContactPage() {
         }),
       });
 
-      const data = await res.json();
-
-      console.log(data);
-
       if (!res.ok) {
         throw new Error("Failed to send");
       }
 
-      setStatus("Message sent!");
+      toast.success("Message sent!");
 
       setForm({
         name: "",
@@ -100,7 +90,9 @@ export default function ContactPage() {
       });
     } catch (err) {
       console.error(err);
-      setStatus("Something went wrong");
+      toast.error("Something went wrong!");
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -111,7 +103,7 @@ export default function ContactPage() {
       <section
         className="relative h-[240px] md:h-[320px] bg-cover bg-center bg-no-repeat flex items-center justify-center"
         style={{
-          backgroundImage: "url('/images/fest.webp')",
+          backgroundImage: bgImage ? `url('${bgImage}')` : "url('/images/fest.webp')",
         }}
       >
         <div className="absolute inset-0 bg-[oklch(0_0_0/0.45)]" />
@@ -132,14 +124,12 @@ export default function ContactPage() {
           <textarea name="comment" placeholder="Your Comment" required value={form.comment} onChange={handleChange} className="w-full h-[280px] md:h-[360px] p-4 bg-transparent border border-[oklch(0.55_0_0)] text-[oklch(1_0_0)] placeholder:text-[oklch(0.75_0_0)] outline-none resize-none focus:border-[oklch(0.65_0.25_8)]" />
 
           <div className="flex justify-end mt-4">
-            <button type="submit" className="relative w-[180px] py-4 uppercase tracking-[2px] font-semibold text-[oklch(1_0_0)] hover:text-[oklch(0.65_0.25_8)] transition">
+            <button type="submit" disabled={isSubmitting} className="relative w-[180px] py-4 uppercase tracking-[2px] font-semibold text-[oklch(1_0_0)] hover:text-[oklch(0.65_0.25_8)] transition disabled:opacity-50">
               <span className="absolute top-0 left-0 w-full h-[2px] bg-[oklch(1_0_0)]" />
               <span className="absolute bottom-0 left-0 w-full h-[2px] bg-[oklch(1_0_0)]" />
-              SEND
+              {isSubmitting ? "SENDING..." : "SEND"}
             </button>
           </div>
-
-          {status && <p className="text-center mt-6 text-sm text-[oklch(0.8_0_0)]">{status}</p>}
         </form>
       </section>
     </main>
