@@ -18,10 +18,10 @@ export default function CommentForm({ eventId }: CommentFormProps) {
     const formData = new FormData(e.currentTarget);
 
     const comment = {
-      name: formData.get("name"),
-      email: formData.get("email"),
-      content: formData.get("content"),
       eventId,
+      name: formData.get("name"),
+      content: formData.get("content"),
+      date: new Date().toISOString(),
     };
 
     try {
@@ -50,11 +50,7 @@ export default function CommentForm({ eventId }: CommentFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      <div className="grid md:grid-cols-2 gap-5">
-        <input name="name" type="text" placeholder="Your Name" required className="bg-transparent border border-white/40 h-14 px-5 text-sm outline-none focus:border-pink-500" />
-
-        <input name="email" type="email" placeholder="Your Email" required className="bg-transparent border border-white/40 h-14 px-5 text-sm outline-none focus:border-pink-500" />
-      </div>
+      <input name="name" type="text" placeholder="Your Name" required className="w-full bg-transparent border border-white/40 h-14 px-5 text-sm outline-none focus:border-pink-500" />
 
       <textarea name="content" placeholder="Your Comment" rows={9} required className="w-full bg-transparent border border-white/40 p-5 text-sm outline-none focus:border-pink-500 resize-none" />
 
