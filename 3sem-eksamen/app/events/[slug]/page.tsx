@@ -130,7 +130,7 @@ export default async function EventDetailPage({ params }: Props) {
           <div className="mt-20 max-w-5xl">
             <h2 className="text-3xl font-black uppercase mb-10">Leave A Comment</h2>
 
-            <CommentForm />
+            <CommentForm eventId={event.id} />
           </div>
         </div>
       </section>
