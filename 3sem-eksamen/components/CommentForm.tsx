@@ -15,7 +15,8 @@ export default function CommentForm({ eventId }: CommentFormProps) {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    const formData = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
 
     const comment = {
       eventId,
@@ -40,7 +41,7 @@ export default function CommentForm({ eventId }: CommentFormProps) {
       }
 
       toast.success("Comment submitted!");
-      e.currentTarget.reset();
+      form.reset();
     } catch (error) {
       toast.error("Something went wrong!");
     } finally {
