@@ -97,7 +97,7 @@ export default function ContactPage() {
   }
 
   return (
-    <main className="bg-[oklch(0.08_0_0)] min-h-screen text-[oklch(1_0_0)] overflow-hidden">
+    <main className="bg-[oklch(0.08_0_0)] min-h-screen text-[oklch(1_0_0)]">
       <Navbar />
 
       <section
