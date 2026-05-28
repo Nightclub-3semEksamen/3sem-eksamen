@@ -1,3 +1,5 @@
+import GalleryClient from "@/components/GalleryClient";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 type GalleryPhoto = {
@@ -64,7 +66,9 @@ export default async function Gallary() {
 
   if (!response.ok) {
     return (
-      <ErrorMessage message={`Gallery API fejlede med status ${response.status}`} />
+      <ErrorMessage
+        message={`Gallery API fejlede med status ${response.status}`}
+      />
     );
   }
 
@@ -73,14 +77,21 @@ export default async function Gallary() {
   try {
     photos = await response.json();
   } catch {
-    return <ErrorMessage message="Gallery API svarede, men JSON kunne ikke læses." />;
+    return (
+      <ErrorMessage message="Gallery API svarede, men JSON kunne ikke læses." />
+    );
   }
 
   if (!Array.isArray(photos) || photos.length < 7) {
     return <ErrorMessage message="Gallery API returnerede ikke nok billeder." />;
   }
 
-  const galleryPhotos = photos.slice(0, 7);
+  const galleryPhotos = photos.slice(0, 7).map((photo) => ({
+    id: photo.id,
+    description: photo.description,
+    image: getImageUrl(photo.asset.url),
+    alt: photo.asset.alt,
+  }));
 
   return (
     <section className="bg-[oklch(0.04_0_0)] py-20 text-white">
@@ -102,104 +113,7 @@ export default async function Gallary() {
         />
       </div>
 
-      <div className="mt-12 hidden w-full md:block">
-        <div
-          className="grid"
-          style={{
-            gridTemplateColumns: "1.2fr 0.85fr 1.2fr 0.75fr",
-          }}
-        >
-          <div className="h-[255px] overflow-hidden">
-            <img
-              src={getImageUrl(galleryPhotos[0].asset.url)}
-              alt={galleryPhotos[0].asset.alt}
-              className="h-full w-full object-cover"
-            />
-          </div>
-
-          <div className="h-[255px] overflow-hidden">
-            <img
-              src={getImageUrl(galleryPhotos[1].asset.url)}
-              alt={galleryPhotos[1].asset.alt}
-              className="h-full w-full object-cover"
-            />
-          </div>
-
-          <div className="h-[255px] overflow-hidden">
-            <img
-              src={getImageUrl(galleryPhotos[2].asset.url)}
-              alt={galleryPhotos[2].asset.alt}
-              className="h-full w-full object-cover"
-            />
-          </div>
-
-          <div className="h-[255px] overflow-hidden">
-            <img
-              src={getImageUrl(galleryPhotos[3].asset.url)}
-              alt={galleryPhotos[3].asset.alt}
-              className="h-full w-full object-cover"
-            />
-          </div>
-        </div>
-
-        <div
-          className="grid"
-          style={{
-            gridTemplateColumns: "1fr 1.15fr 1.15fr",
-          }}
-        >
-          <div className="h-[255px] overflow-hidden">
-            <img
-              src={getImageUrl(galleryPhotos[4].asset.url)}
-              alt={galleryPhotos[4].asset.alt}
-              className="h-full w-full object-cover"
-            />
-          </div>
-
-          <div className="h-[255px] overflow-hidden">
-            <img
-              src={getImageUrl(galleryPhotos[5].asset.url)}
-              alt={galleryPhotos[5].asset.alt}
-              className="h-full w-full object-cover"
-            />
-          </div>
-
-          <div className="h-[255px] overflow-hidden">
-            <img
-              src={getImageUrl(galleryPhotos[6].asset.url)}
-              alt={galleryPhotos[6].asset.alt}
-              className="h-full w-full object-cover"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-12 grid grid-cols-1 md:hidden">
-        {galleryPhotos.map((photo, index) => {
-          const mobileHeights = [
-            "h-[330px]",
-            "h-[455px]",
-            "h-[325px]",
-            "h-[565px]",
-            "h-[335px]",
-            "h-[285px]",
-            "h-[290px]",
-          ];
-
-          return (
-            <div
-              key={photo.id}
-              className={`overflow-hidden ${mobileHeights[index]}`}
-            >
-              <img
-                src={getImageUrl(photo.asset.url)}
-                alt={photo.asset.alt}
-                className="h-full w-full object-cover"
-              />
-            </div>
-          );
-        })}
-      </div>
+      <GalleryClient photos={galleryPhotos} />
     </section>
   );
 }

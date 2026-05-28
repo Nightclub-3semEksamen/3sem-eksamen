@@ -1,5 +1,5 @@
-import Link from "next/link";
 import FeaturedMobileCarousel from "@/components/FeaturedMobileCarousel";
+import FeaturedDesktopSlider from "@/components/FeaturedDesktopSlider";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -47,10 +47,6 @@ function formatDesktopDate(dateString: string) {
   return `${month} ${day} · ${time}`;
 }
 
-function isFeaturedEvent(event: EventItem) {
-  return event.isFeatured === true || event.isFeatured === "true";
-}
-
 function ErrorMessage({ message }: { message: string }) {
   return (
     <section
@@ -78,7 +74,9 @@ function ErrorMessage({ message }: { message: string }) {
 
 export default async function Featured() {
   if (!API_URL) {
-    return <ErrorMessage message="API_URL mangler: NEXT_PUBLIC_API_URL bliver ikke læst." />;
+    return (
+      <ErrorMessage message="API_URL mangler: NEXT_PUBLIC_API_URL bliver ikke læst." />
+    );
   }
 
   let response: Response;
@@ -88,11 +86,17 @@ export default async function Featured() {
       cache: "no-store",
     });
   } catch {
-    return <ErrorMessage message={`Fetch fejlede: kunne ikke kontakte API'et på ${API_URL}/events`} />;
+    return (
+      <ErrorMessage
+        message={`Fetch fejlede: kunne ikke kontakte API'et på ${API_URL}/events`}
+      />
+    );
   }
 
   if (!response.ok) {
-    return <ErrorMessage message={`API fetch fejlede med status ${response.status}`} />;
+    return (
+      <ErrorMessage message={`API fetch fejlede med status ${response.status}`} />
+    );
   }
 
   let events: EventItem[];
@@ -111,10 +115,20 @@ export default async function Featured() {
     return <ErrorMessage message="API'et returnerede 0 events." />;
   }
 
-  const featuredEvents = events.filter(isFeaturedEvent).slice(0, 2);
-  const desktopEvents = featuredEvents.length > 0 ? featuredEvents : events.slice(0, 2);
+  const sortedEvents = [...events].sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+  );
 
-  const mobileEvents = events.map((event) => ({
+  const desktopEvents = sortedEvents.map((event) => ({
+    id: event.id,
+    slug: event.slug,
+    title: event.title,
+    image: getImageUrl(event.asset.url),
+    alt: event.asset.alt,
+    formattedDate: formatDesktopDate(event.date),
+  }));
+
+  const mobileEvents = sortedEvents.map((event) => ({
     id: event.id,
     slug: event.slug,
     title: event.title,
@@ -148,31 +162,7 @@ export default async function Featured() {
           className="mx-auto mt-4 h-auto w-[150px] md:w-[120px]"
         />
 
-        <div className="mx-auto mt-12 hidden max-w-[950px] grid-cols-1 gap-8 md:grid md:max-w-[1050px] md:grid-cols-2 md:gap-6">
-          {desktopEvents.map((event) => (
-            <Link
-              key={event.id}
-              href={`/events/${event.slug}`}
-              className="group block overflow-hidden bg-black focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[oklch(0.65_0.25_8)]"
-            >
-              <div className="h-[360px] overflow-hidden">
-                <img
-                  src={getImageUrl(event.asset.url)}
-                  alt={event.asset.alt}
-                  className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
-                />
-              </div>
-
-              <div className="flex min-h-[54px] items-center justify-between gap-4 bg-[oklch(0.52_0.22_5)] px-6 text-white">
-                <h3 className="text-base font-bold">{event.title}</h3>
-
-                <p className="shrink-0 text-sm font-medium">
-                  {formatDesktopDate(event.date)}
-                </p>
-              </div>
-            </Link>
-          ))}
-        </div>
+        <FeaturedDesktopSlider events={desktopEvents} />
 
         <FeaturedMobileCarousel events={mobileEvents} />
       </div>

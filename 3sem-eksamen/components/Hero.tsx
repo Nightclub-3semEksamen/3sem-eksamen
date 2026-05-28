@@ -1,38 +1,136 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import gsap from "gsap";
+
+const heroBackgrounds = ["/images/herooo.webp", "/images/header_bg_1.webp"];
 
 export default function Hero() {
+  const [backgroundImage, setBackgroundImage] = useState(heroBackgrounds[0]);
+
+  const logoRef = useRef<HTMLDivElement | null>(null);
+  const taglineRef = useRef<HTMLParagraphElement | null>(null);
+  const lineRef = useRef<HTMLDivElement | null>(null);
+  const buttonsRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const randomBackground =
+      heroBackgrounds[Math.floor(Math.random() * heroBackgrounds.length)];
+
+    setBackgroundImage(randomBackground);
+  }, []);
+
+  useEffect(() => {
+    const timeline = gsap.timeline();
+
+    timeline.fromTo(
+      logoRef.current,
+      {
+        opacity: 0,
+        scaleX: 0,
+        transformOrigin: "center center",
+      },
+      {
+        opacity: 1,
+        scaleX: 1,
+        duration: 0.9,
+        ease: "power3.out",
+      },
+    );
+
+    timeline.fromTo(
+      taglineRef.current,
+      {
+        opacity: 0,
+        y: -35,
+      },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.65,
+        ease: "bounce.out",
+      },
+      "-=0.1",
+    );
+
+    timeline.fromTo(
+      lineRef.current,
+      {
+        opacity: 0,
+        scaleX: 0,
+        transformOrigin: "center center",
+      },
+      {
+        opacity: 1,
+        scaleX: 1,
+        duration: 0.45,
+        ease: "power2.out",
+      },
+      "-=0.25",
+    );
+
+    timeline.fromTo(
+      buttonsRef.current,
+      {
+        opacity: 0,
+        y: 25,
+      },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.55,
+        ease: "power2.out",
+      },
+      "-=0.15",
+    );
+
+    return () => {
+      timeline.kill();
+    };
+  }, []);
+
   return (
     <section
       className="relative min-h-[820px] bg-cover bg-[position:center_top] text-white md:min-h-[620px] md:bg-center lg:min-h-[720px]"
       style={{
-        backgroundImage:
-          "linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.75)), url('/images/herooo.webp')",
+        backgroundImage: `linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.75)), url('${backgroundImage}')`,
       }}
     >
       <div className="mx-auto flex min-h-[820px] max-w-7xl flex-col items-center justify-center px-8 pt-[20px] text-center md:min-h-[620px] md:pt-0 lg:min-h-[720px]">
-        <Image
-          src="/images/logo2.webp"
-          alt="Night Club logo"
-          width={520}
-          height={220}
-          priority
-          className="h-auto w-[490px] md:w-[430px] lg:w-[750px]"
-        />
+        <div ref={logoRef}>
+          <Image
+            src="/images/logo2.webp"
+            alt="Night Club logo"
+            width={520}
+            height={220}
+            priority
+            className="h-auto w-[490px] md:w-[430px] lg:w-[750px]"
+          />
+        </div>
 
-        <p className="mt-3 text-[22px] font-medium uppercase tracking-[0.55em] text-white md:mt-1 text-xl lg:text-[37px]">
+        <p
+          ref={taglineRef}
+          className="mt-3 text-[22px] font-medium uppercase tracking-[0.55em] text-white md:mt-1 text-xl lg:text-[37px]"
+        >
           Have a good time
         </p>
 
-        <Image
-          src="/images/line.webp"
-          alt=""
-          width={280}
-          height={20}
-          className="mt-4 h-auto w-[390px] md:mt-1 md:w-[220px] lg:w-[600px]"
-        />
+        <div ref={lineRef}>
+          <Image
+            src="/images/line.webp"
+            alt=""
+            width={280}
+            height={20}
+            className="mt-4 h-auto w-[390px] md:mt-1 md:w-[220px] lg:w-[600px]"
+          />
+        </div>
 
-        <div className="mt-9 flex flex-row items-center gap-4 md:mt-6">
+        <div
+          ref={buttonsRef}
+          className="mt-9 flex flex-row items-center gap-4 md:mt-6"
+        >
           <Link
             href="/events"
             className="group relative inline-flex h-[56px] min-w-[172px] items-center justify-center overflow-visible border-2 border-white/55 bg-black/20 px-4 text-center text-[18px] font-bold uppercase tracking-[0.08em] text-white transition duration-300 hover:border-white/65 hover:bg-black/30 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white md:h-[50px] md:min-w-[138px] md:px-4 md:text-[13px]"
