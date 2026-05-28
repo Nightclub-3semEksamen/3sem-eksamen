@@ -101,19 +101,23 @@ export default function ContactPage() {
       <Navbar />
 
       <section
-        className="relative h-[240px] md:h-[320px] bg-cover bg-center bg-no-repeat flex items-center justify-center"
-        style={{
-          backgroundImage: bgImage ? `url('${bgImage}')` : "url('/images/fest.webp')",
-        }}
-      >
-        <div className="absolute inset-0 bg-[oklch(0_0_0/0.45)]" />
+  className="relative flex h-[160px] items-center justify-center bg-cover bg-center bg-no-repeat px-8 text-center md:h-[240px]"
+  style={{
+    backgroundImage: "url('/images/fest.webp')",
+  }}
+>
+  <div className="text-center">
+    <h1 className="text-3xl font-bold uppercase tracking-[4px] md:text-4xl">
+      Contact Us
+    </h1>
 
-        <div className="relative z-10 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold tracking-[4px] uppercase">CONTACT US</h1>
-
-          <div className="w-[90px] h-[2px] bg-[oklch(0.65_0.25_8)] mx-auto mt-3" />
-        </div>
-      </section>
+    <img
+      src="/images/sline.webp"
+      alt=""
+      className="mx-auto mt-4 h-auto w-[220px] md:w-[260px]"
+    />
+  </div>
+</section>
 
       <section className="px-6 py-10 md:py-20 flex justify-center bg-[oklch(0.05_0_0)]">
         <form onSubmit={handleSubmit} className="w-full max-w-[650px]">
