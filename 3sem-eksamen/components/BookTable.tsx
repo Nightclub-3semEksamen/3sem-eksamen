@@ -2,8 +2,6 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
 type EventItem = {
   id: number;
   title: string;
@@ -26,6 +24,10 @@ type TableItem = {
   number: string;
   seats: number;
   image: string;
+};
+
+type BookTableProps = {
+  events: EventItem[];
 };
 
 const rowPattern = [
@@ -104,8 +106,7 @@ function TableCard({
   );
 }
 
-export default function BookTable() {
-  const [events, setEvents] = useState<EventItem[]>([]);
+export default function BookTable({ events }: BookTableProps) {
   const [reservedTables, setReservedTables] = useState<string[]>([]);
   const [selectedEventId, setSelectedEventId] = useState("");
   const [selectedTable, setSelectedTable] = useState("");
@@ -119,7 +120,6 @@ export default function BookTable() {
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState<"success" | "error" | "">("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isLoadingEvents, setIsLoadingEvents] = useState(true);
   const [isLoadingReservations, setIsLoadingReservations] = useState(false);
 
   const selectedEvent = useMemo(
@@ -139,41 +139,8 @@ export default function BookTable() {
     guestsNumber > selectedTableData.seats;
 
   useEffect(() => {
-    async function loadEvents() {
-      if (!API_URL) {
-        setMessage("API connection is missing.");
-        setMessageType("error");
-        setIsLoadingEvents(false);
-        return;
-      }
-
-      try {
-        const response = await fetch(`${API_URL}/events`, {
-          cache: "no-store",
-        });
-
-        if (!response.ok) {
-          setMessage("Could not load events.");
-          setMessageType("error");
-          return;
-        }
-
-        const data: EventItem[] = await response.json();
-        setEvents(data);
-      } catch {
-        setMessage("Could not load events.");
-        setMessageType("error");
-      } finally {
-        setIsLoadingEvents(false);
-      }
-    }
-
-    loadEvents();
-  }, []);
-
-  useEffect(() => {
     async function loadReservations() {
-      if (!API_URL || !selectedEventId) {
+      if (!selectedEventId) {
         setReservedTables([]);
         return;
       }
@@ -183,10 +150,7 @@ export default function BookTable() {
 
       try {
         const response = await fetch(
-          `${API_URL}/reservations?eventId=${selectedEventId}`,
-          {
-            cache: "no-store",
-          },
+          `/api/reservations?eventId=${selectedEventId}`,
         );
 
         if (!response.ok) {
@@ -279,16 +243,10 @@ export default function BookTable() {
       return;
     }
 
-    if (!API_URL) {
-      setMessage("API connection is missing.");
-      setMessageType("error");
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`${API_URL}/reservations`, {
+      const response = await fetch("/api/reservations", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -425,7 +383,7 @@ export default function BookTable() {
                   className="h-14 w-full appearance-none border border-white/50 bg-black px-5 pr-12 text-sm font-medium text-white outline-none focus:border-[oklch(0.65_0.25_8)]"
                 >
                   <option value="">
-                    {isLoadingEvents ? "Loading nights..." : "Choose Night"}
+                    {events.length === 0 ? "No nights available" : "Choose Night"}
                   </option>
 
                   {events.map((event) => (
