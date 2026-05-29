@@ -97,9 +97,12 @@ export default async function EventDetailPage({ params }: Props) {
 
               <p className="text-[oklch(0.78_0_0)] leading-8">{event.description}</p>
 
-              <Link href="/book-table" className="inline-block mt-8 border border-[oklch(0.65_0.25_8)] text-[oklch(0.65_0.25_8)] px-8 py-3 uppercase text-sm tracking-[3px] font-bold hover:bg-[oklch(0.65_0.25_8)] hover:text-[oklch(0.08_0_0)] transition-all duration-300">
-                Book Table
-              </Link>
+              <Link
+  href={`/book-table?eventId=${event.id}`}
+  className="inline-block mt-8 border border-[oklch(0.65_0.25_8)] text-[oklch(0.65_0.25_8)] px-8 py-3 uppercase text-sm tracking-[3px] font-bold hover:bg-[oklch(0.65_0.25_8)] hover:text-[oklch(0.08_0_0)] transition-all duration-300"
+>
+  Book Table
+</Link>
             </div>
           </div>
 

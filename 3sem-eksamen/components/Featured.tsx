@@ -7,7 +7,10 @@ type EventItem = {
   id: number;
   slug: string;
   title: string;
+  excerpt?: string;
+  description?: string;
   date: string;
+  doorsOpen?: string;
   location: string;
   isFeatured: boolean | string;
   asset: {
@@ -28,23 +31,27 @@ function getImageUrl(path: string) {
   return `${cleanBase}${cleanPath}`;
 }
 
-function formatDesktopDate(dateString: string) {
+function formatDate(dateString: string) {
   const date = new Date(dateString);
 
   if (Number.isNaN(date.getTime())) return "";
 
-  const month = date.toLocaleDateString("en-US", {
-    month: "long",
+  return date.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
   });
+}
 
-  const day = date.getDate();
+function formatTime(dateString: string) {
+  const date = new Date(dateString);
 
-  const time = date.toLocaleTimeString("en-GB", {
+  if (Number.isNaN(date.getTime())) return "";
+
+  return date.toLocaleTimeString("en-GB", {
     hour: "2-digit",
     minute: "2-digit",
   });
-
-  return `${month} ${day} · ${time}`;
 }
 
 function ErrorMessage({ message }: { message: string }) {
@@ -115,28 +122,33 @@ export default async function Featured() {
     return <ErrorMessage message="API'et returnerede 0 events." />;
   }
 
-  const sortedEvents = [...events].sort(
+  const featuredEvents = events.filter(
+    (event) => event.isFeatured === true || event.isFeatured === "true",
+  );
+
+  if (featuredEvents.length === 0) {
+    return <ErrorMessage message="API'et returnerede ingen featured events." />;
+  }
+
+  const sortedEvents = [...featuredEvents].sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
   );
 
-  const desktopEvents = sortedEvents.map((event) => ({
-    id: event.id,
-    slug: event.slug,
-    title: event.title,
-    image: getImageUrl(event.asset.url),
-    alt: event.asset.alt,
-    formattedDate: formatDesktopDate(event.date),
-  }));
+  const formattedEvents = sortedEvents.map((event) => {
+    const timeSource = event.doorsOpen || event.date;
 
-  const mobileEvents = sortedEvents.map((event) => ({
-    id: event.id,
-    slug: event.slug,
-    title: event.title,
-    date: event.date,
-    location: event.location,
-    image: getImageUrl(event.asset.url),
-    alt: event.asset.alt,
-  }));
+    return {
+      id: event.id,
+      slug: event.slug,
+      title: event.title,
+      excerpt: event.excerpt || event.description || "",
+      date: formatDate(event.date),
+      time: formatTime(timeSource),
+      location: event.location,
+      image: getImageUrl(event.asset.url),
+      alt: event.asset.alt,
+    };
+  });
 
   return (
     <section
@@ -162,9 +174,9 @@ export default async function Featured() {
           className="mx-auto mt-4 h-auto w-[150px] md:w-[120px]"
         />
 
-        <FeaturedDesktopSlider events={desktopEvents} />
+        <FeaturedDesktopSlider events={formattedEvents} />
 
-        <FeaturedMobileCarousel events={mobileEvents} />
+        <FeaturedMobileCarousel events={formattedEvents} />
       </div>
     </section>
   );

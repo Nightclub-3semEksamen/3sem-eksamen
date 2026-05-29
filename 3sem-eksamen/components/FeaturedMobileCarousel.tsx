@@ -3,44 +3,21 @@
 import Link from "next/link";
 import { useRef, useState } from "react";
 
-type MobileEvent = {
+type FeaturedEvent = {
   id: number;
   slug: string;
   title: string;
+  excerpt: string;
   date: string;
+  time: string;
   location: string;
   image: string;
   alt: string;
 };
 
 type FeaturedMobileCarouselProps = {
-  events: MobileEvent[];
+  events: FeaturedEvent[];
 };
-
-function formatMobileDate(dateString: string) {
-  const date = new Date(dateString);
-
-  if (Number.isNaN(date.getTime())) return "";
-
-  const day = date.getDate();
-
-  const month = date.toLocaleDateString("en-US", {
-    month: "short",
-  });
-
-  return `${day} ${month}`;
-}
-
-function formatMobileTime(dateString: string) {
-  const date = new Date(dateString);
-
-  if (Number.isNaN(date.getTime())) return "";
-
-  return date.toLocaleTimeString("en-GB", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
 
 export default function FeaturedMobileCarousel({
   events,
@@ -80,33 +57,59 @@ export default function FeaturedMobileCarousel({
         className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {events.map((event) => (
-          <Link
+          <article
             key={event.id}
-            href={`/events/${event.slug}`}
-            className="block min-w-full snap-center overflow-hidden bg-black"
+            className="min-w-full snap-center overflow-hidden bg-black text-white"
           >
-            <div className="h-[450px] overflow-hidden">
-              <img
-                src={event.image}
-                alt={event.alt}
-                className="h-full w-full object-cover"
-              />
+            <Link
+              href={`/events/${event.slug}`}
+              className="block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[oklch(0.65_0.25_8)]"
+            >
+              <div className="h-[450px] overflow-hidden">
+                <img
+                  src={event.image}
+                  alt={event.alt}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            </Link>
+
+            <div className="bg-[oklch(0.65_0.25_8)] px-5 py-5 text-white">
+              <div className="grid grid-cols-3 items-center gap-3 text-center">
+                <p className="text-lg font-bold">{event.date}</p>
+
+                <p className="text-lg font-bold">{event.time}</p>
+
+                <p className="text-lg font-bold leading-tight">
+                  {event.location}
+                </p>
+              </div>
+
+              <h3 className="mt-5 text-center text-xl font-bold uppercase tracking-[0.06em]">
+                {event.title}
+              </h3>
+
+              <p className="mx-auto mt-3 max-h-[82px] max-w-[320px] overflow-hidden text-center text-sm font-medium leading-relaxed">
+                {event.excerpt}
+              </p>
+
+              <div className="mt-5 flex justify-center gap-5">
+                <Link
+                  href={`/events/${event.slug}`}
+                  className="text-sm font-bold uppercase tracking-[0.08em] text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+                >
+                  Read More
+                </Link>
+
+                <Link
+                  href={`/book-table?eventId=${event.id}`}
+                  className="border-y-2 border-white px-5 py-3 text-sm font-bold uppercase tracking-[0.08em] transition hover:border-black hover:text-black focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+                >
+                  Book Now
+                </Link>
+              </div>
             </div>
-
-            <div className="grid min-h-[64px] grid-cols-3 items-center bg-[oklch(0.65_0.25_8)] px-4 text-center text-white">
-              <p className="text-xl font-bold">
-                {formatMobileDate(event.date)}
-              </p>
-
-              <p className="text-xl font-bold">
-                {formatMobileTime(event.date)}
-              </p>
-
-              <p className="text-xl font-bold leading-tight">
-                {event.location}
-              </p>
-            </div>
-          </Link>
+          </article>
         ))}
       </div>
 

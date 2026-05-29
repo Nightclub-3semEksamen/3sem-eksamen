@@ -33,18 +33,10 @@ export default function Newsletter() {
       return;
     }
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-
-    if (!apiUrl) {
-      setMessage("API connection is missing.");
-      setMessageType("error");
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`${apiUrl}/newsletters`, {
+      const response = await fetch("/api/newsletters", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -105,8 +97,7 @@ export default function Newsletter() {
         </h2>
 
         <p className="newsletter-subtitle">
-          Subscribe to our newsletter and{" "}
-          <br className="md:hidden" />
+          Subscribe to our newsletter and <br className="md:hidden" />
           never miss an{" "}
           <a
             href="/events"

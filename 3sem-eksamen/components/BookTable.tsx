@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 type EventItem = {
   id: number;
@@ -107,6 +108,8 @@ function TableCard({
 }
 
 export default function BookTable({ events }: BookTableProps) {
+  const searchParams = useSearchParams();
+
   const [reservedTables, setReservedTables] = useState<string[]>([]);
   const [selectedEventId, setSelectedEventId] = useState("");
   const [selectedTable, setSelectedTable] = useState("");
@@ -121,6 +124,14 @@ export default function BookTable({ events }: BookTableProps) {
   const [messageType, setMessageType] = useState<"success" | "error" | "">("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoadingReservations, setIsLoadingReservations] = useState(false);
+
+  useEffect(() => {
+    const eventIdFromUrl = searchParams.get("eventId");
+
+    if (eventIdFromUrl) {
+      setSelectedEventId(eventIdFromUrl);
+    }
+  }, [searchParams]);
 
   const selectedEvent = useMemo(
     () => events.find((event) => String(event.id) === selectedEventId),
