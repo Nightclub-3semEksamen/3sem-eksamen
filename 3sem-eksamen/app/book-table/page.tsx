@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Navbar from "@/components/Navbar";
 import BookTable from "@/components/BookTable";
 
@@ -32,7 +33,10 @@ export default async function BookTablePage() {
   return (
     <main className="min-h-screen bg-black text-white">
       <Navbar />
-      <BookTable events={events} />
+
+      <Suspense fallback={null}>
+        <BookTable events={events} />
+      </Suspense>
     </main>
   );
 }
